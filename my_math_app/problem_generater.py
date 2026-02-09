@@ -1,0 +1,138 @@
+import random
+from pb_logic import count_pb_in_sequence
+from mb_logic import count_mb_in_sequence
+
+def create_digits_pool(num_digits, num_lines, zero_count):
+    # 1～9の数字をほぼ均等に配置した数字プールを生成
+    total_cells = num_digits * num_lines
+    non_zero_cells = total_cells - zero_count
+    base_count = non_zero_cells // 9
+    remainder = non_zero_cells % 9
+    digits_pool = []
+    for i in range(1, 10):
+        digits_pool.extend([i] * base_count)
+    extra_candidates = random.choices(range(1, 10), k=remainder)
+    digits_pool.extend(extra_candidates)
+    return digits_pool
+
+def create_zero_terms(current_pool, zero_count):
+    # プールから数字を取り出し、一の位が0の2桁数を生成
+    zero_terms = []
+    for _ in range(zero_count):
+        val = current_pool.pop()
+        zero_terms.append(val * 10 + 0)
+    return zero_terms
+
+def create_non_zero_terms(current_pool):
+    # 十の位と一の位が異なる2桁数のペアを生成（最大50回試行）
+    for _ in range(50):
+        random.shuffle(current_pool)
+        attempt_pairs = []
+        possible = True
+        for i in range(0, len(current_pool), 2):
+            tens = current_pool[i]
+            units = current_pool[i + 1]
+            if tens == units:
+                possible = False
+                break
+            attempt_pairs.append(tens * 10 + units)
+        if possible:
+            return attempt_pairs, True
+    return [], False
+
+def apply_signs(temp_terms, minus_count):
+    # 最初の項を正、残りの項から指定数をマイナスに設定して計算式を作成
+    random.shuffle(temp_terms)
+    x1 = temp_terms[0]
+    rest = temp_terms[1:]
+    minus_indices = random.sample(range(len(rest)), minus_count)
+    calc_sequence = [x1] + rest[:]
+    for idx in minus_indices:
+        calc_sequence[idx + 1] = -calc_sequence[idx + 1]
+    return calc_sequence
+
+def has_duplicate_absolute_values(calc_sequence):
+    # 数列の絶対値に重複があるかを判定
+    absolute_values = [abs(x) for x in calc_sequence]
+    return len(absolute_values) != len(set(absolute_values))
+
+def is_cumulative_sum_valid(calc_sequence, min_sum=10, max_sum=999):
+    # 累積和が指定範囲内に収まっているかを検証
+    if has_duplicate_absolute_values(calc_sequence):
+        return False, 0
+    current_sum = 0
+    for x in calc_sequence:
+        current_sum += x
+        if not (min_sum <= current_sum <= max_sum):
+            return False, current_sum
+    return True, current_sum
+
+def generate_single_problem(num_digits, num_lines, zero_count, minus_count):
+    # 指定条件に合致する単一の問題を生成（最大1000回試行）
+    digits_pool = create_digits_pool(num_digits, num_lines, zero_count)
+    for _ in range(1000):
+        current_pool = digits_pool[:]
+        random.shuffle(current_pool)
+        temp_terms = []
+        temp_terms.extend(create_zero_terms(current_pool, zero_count))
+        non_zero_terms, pairing_success = create_non_zero_terms(current_pool)
+        if not pairing_success:
+            continue
+        temp_terms.extend(non_zero_terms)
+        calc_sequence = apply_signs(temp_terms, minus_count)
+        valid, final_sum = is_cumulative_sum_valid(calc_sequence)
+        if valid:
+            return calc_sequence, final_sum
+    return None
+
+def format_formula(terms, ans):
+    # 項のリストと答えを「式=答え」の形式にフォーマット
+    formula = str(terms[0])
+    for num in terms[1:]:
+        if num >= 0:
+            formula += f"+{num}"
+        else:
+            formula += f"{num}"
+    return f"{formula}={ans}"
+
+def generate_problem_set():
+    """
+    2桁8口の問題を指定数生成して出力する
+    PBカウント機能を追加
+    """
+    NUM_DIGITS = 2 #桁数
+    NUM_LINES = 8 #口数
+    ZERO_COUNT = 2 #一の位0の数
+    MINUS_COUNT = 3 #マイナスの数
+    NUM_QUESTIONS = 5 #生成する問題数
+    TARGET_DIFFICULT_COUNT = 3 #難(PB+MB以外）の回数
+
+    problems = []
+    attempts = 0
+    max_attempts = 10000  # 無限ループ防止
+    target_pb_mb_count = NUM_LINES - TARGET_DIFFICULT_COUNT  # PB+MBの回数
+
+    while len(problems) < NUM_QUESTIONS and attempts < max_attempts:
+        attempts += 1
+        result = generate_single_problem(NUM_DIGITS, NUM_LINES, ZERO_COUNT, MINUS_COUNT)
+        if result:
+            terms, ans = result
+            # ここでPBの数をカウント
+            pb_count = count_pb_in_sequence(terms)
+            # MBの数をカウント
+            mb_count = count_mb_in_sequence(terms)
+
+            # PB+MBの合計が目標値と一致する場合のみ追加
+            if pb_count + mb_count == target_pb_mb_count:
+                problems.append((terms, ans, pb_count, mb_count))
+
+    print(f"2桁8口を{NUM_QUESTIONS}問 (難:{TARGET_DIFFICULT_COUNT}回のもののみ)")
+    for seq, ans, pb, mb in problems:
+        # 出力にPBとMBの回数を追加
+        print(f"{format_formula(seq, ans)}  [PB:{pb}回, MB:{mb}回]")
+
+    if len(problems) < NUM_QUESTIONS:
+        print("指定された条件で十分な問題を生成できませんでした。")
+
+if __name__ == "__main__":
+    generate_problem_set()
