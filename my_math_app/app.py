@@ -18,7 +18,7 @@ st.sidebar.header("設定")
 #digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=2, value=2)
 num_lines = st.sidebar.number_input("口数", min_value=3, max_value=15, value=8)
 zero_count = st.sidebar.number_input("一の位が0の数", min_value=0, max_value=num_lines, value=2)
-minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=num_lines, value=3)
+minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=num_lines - 1, value=3)
 num_questions = st.sidebar.number_input("生成する問題数", min_value=1, max_value=50, value=5)
 
 # 難易度設定（PB+MB以外の回数）
