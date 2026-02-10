@@ -7,6 +7,8 @@ from pb_logic import count_pb_in_sequence
 from mb_logic import count_mb_in_sequence
 from problem_generater import generate_single_problem, format_formula
 
+digit_count = 2 # 2桁
+
 # --- 設定とタイトル ---
 st.set_page_config(page_title="計算問題ジェネレーター", layout="centered")
 st.title("🧮 2桁問題ジェネレーター")
@@ -26,7 +28,7 @@ st.sidebar.subheader("難易度調整")
 target_difficult_count = st.sidebar.number_input(
     "「難」の数 (PB/MB以外)",
     min_value=0,
-    max_value=num_lines,
+    max_value=digit_count * num_lines,
     value=3,
     help="この回数だけPBでもMBでもない計算が含まれます。残りはすべてPBかMBになります。"
 )
@@ -35,7 +37,7 @@ target_difficult_count = st.sidebar.number_input(
 if st.button("問題を生成する", type="primary"):
 
     # ターゲットとなるPB+MBの合計回数
-    target_pb_mb_count = num_lines - target_difficult_count
+    target_pb_mb_count = digit_count * num_lines - target_difficult_count
 
     if target_pb_mb_count < 0:
         st.error("エラー: 「難」の回数が口数を超えています。")
