@@ -19,10 +19,8 @@ def count_pb_in_sequence(terms):
             # --- 一の位の判定 ---
             curr_ones = current_sum % 10
             val_ones = val % 10
-            if not is_plus_basic_digit(curr_ones, val_ones):
-                # 条件を満たさなかったらこのループ反復をスキップ
-                current_sum += val
-                continue
+            if is_plus_basic_digit(curr_ones, val_ones):
+                pb_count += 1
 
             # --- 十の位の判定 ---
             # 現在の合計値の十の位（100以上になっても、計算に関与するのは十の位）

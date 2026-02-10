@@ -110,7 +110,7 @@ def generate_problem_set():
     problems = []
     attempts = 0
     max_attempts = 10000  # 無限ループ防止
-    target_pb_mb_count = NUM_LINES - TARGET_DIFFICULT_COUNT  # PB+MBの回数
+    target_pb_mb_count = NUM_DIGITS * NUM_LINES - TARGET_DIFFICULT_COUNT  # PB+MBの回数
 
     while len(problems) < NUM_QUESTIONS and attempts < max_attempts:
         attempts += 1

@@ -27,10 +27,8 @@ def count_mb_in_sequence(terms):
             val_ones = abs_val % 10
 
             # 一の位がMB条件を満たさない場合
-            if not is_minus_basic_digit(curr_ones, val_ones):
-                # 合計を更新して次の項へ（十の位は判定しない）
-                current_sum += val
-                continue
+            if is_minus_basic_digit(curr_ones, val_ones):
+                mb_count += 1
 
             # --- 十の位の判定 ---
             curr_tens = (current_sum // 10) % 10
