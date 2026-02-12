@@ -9,7 +9,7 @@ def is_minus_basic_digit(a, b):
     """
     return (a // 5 >= b // 5) and (a % 5 >= b % 5)
 
-def count_mb_in_sequence(terms):
+def count_mb_in_sequence(terms, num_digits=2):
     """
     計算過程に含まれるMBの総数をカウントする（口単位）
     一の位がMBでなければ、その行はMBとしてカウントせず、十の位の判定もスキップする。

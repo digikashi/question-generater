@@ -6,7 +6,7 @@ def is_plus_basic_digit(a, b):
     """
     return (a + b < 10) and ((a % 5) + (b % 5) < 5)
 
-def count_pb_in_sequence(terms):
+def count_pb_in_sequence(terms, num_digits=2):
     """
     計算過程に含まれるPBの総数をカウントする
     """
