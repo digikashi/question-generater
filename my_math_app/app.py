@@ -17,9 +17,9 @@ st.sidebar.header("設定")
 
 digit_count = 2
 #digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
-num_lines = st.sidebar.number_input("口数", min_value=3, max_value=15, value=8)
-zero_count = st.sidebar.number_input("一の位が0の数", min_value=0, max_value=num_lines, value=2)
-minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=num_lines - 1, value=3)
+num_lines = st.sidebar.number_input("口数", min_value=1, max_value=15, value=8)
+zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=15, value=2)
+minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=14, value=3)
 num_questions = st.sidebar.number_input("生成する問題数", min_value=1, max_value=50, value=5)
 
 # 難易度設定（PB+MB以外の回数）
@@ -35,11 +35,10 @@ target_difficult_count = st.sidebar.number_input(
 # 生成ボタン
 if st.button("問題を生成する", type="primary"):
 
-    # ターゲットとなるPB+MBの合計回数
-    target_pb_mb_count = digit_count * num_lines - target_difficult_count
-
-    if target_pb_mb_count < 0:
-        st.error("エラー: 「難」の回数が口数を超えています。")
+    if minus_count >= num_lines:
+        st.error("エラー: マイナスの回数が口数以上です。")
+    elif zero_count > num_lines:
+        st.error("エラー: 0の回数が口数を超えています。")
     else:
         problems = []
         attempts = 0
