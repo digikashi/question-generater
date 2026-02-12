@@ -22,24 +22,24 @@ st.markdown("条件を指定して問題を生成できます")
 st.sidebar.header("設定")
 
 digit_count = 2
-#digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
+# digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
 num_lines = st.sidebar.number_input("口数", min_value=1, max_value=15, value=8)
 zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=15, value=2)
 minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=14, value=3)
 num_questions = st.sidebar.number_input("生成する問題数", min_value=1, max_value=50, value=5)
 
 st.sidebar.divider()
-st.slidebar.subheader("難易度調整")
+st.sidebar.subheader("難易度調整")
 
-target_p5_count = st.sidebar.number_input("p5",min_value=0,max_value=digit_count * num_lines,value=3)
-target_p10_count = st.sidebar.number_input("p10",min_value=0,max_value=digit_count * num_lines,value=3)
-target_p15_count = st.sidebar.number_input("p15",min_value=0,max_value=digit_count * num_lines,value=3)
-target_m5_count = st.sidebar.number_input("p5",min_value=0,max_value=digit_count * num_lines,value=3)
-target_m10_count = st.sidebar.number_input("p10",min_value=0,max_value=digit_count * num_lines,value=3)
-target_m15_count = st.sidebar.number_input("p15",min_value=0,max_value=digit_count * num_lines,value=3)
+target_p5_count = st.sidebar.number_input("p5", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p10_count = st.sidebar.number_input("p10", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p15_count = st.sidebar.number_input("p15", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m5_count = st.sidebar.number_input("m5", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m10_count = st.sidebar.number_input("m10", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m15_count = st.sidebar.number_input("m15", min_value=0, max_value=digit_count * num_lines, value=3)
 
-sum = target_p5_count + target_p10_count + target_p15_count + target_m5_count + target_m10_count + target_m15_count
-st.slidebar.text("「難」の合計:" + sum + "回")
+total_difficult = target_p5_count + target_p10_count + target_p15_count + target_m5_count + target_m10_count + target_m15_count
+st.sidebar.text(f"「難」の合計: {total_difficult} 回")
 
 # 生成ボタン
 if st.button("問題を生成する", type="primary"):
@@ -65,38 +65,52 @@ if st.button("問題を生成する", type="primary"):
 
             if result:
                 terms, ans = result
+
+                # もしp5が一致しなければ、他の計算をする前にスキップしたほうが高速
+                p5 = count_p5_in_sequence(terms, digit_count)
+                if p5 != target_p5_count:
+                    continue
+
+                p10 = count_p10_in_sequence(terms, digit_count)
+                if p10 != target_p10_count:
+                    continue
+
+                p15 = count_p15_in_sequence(terms, digit_count)
+                if p15 != target_p15_count:
+                    continue
+
+                m5 = count_m5_in_sequence(terms, digit_count)
+                if m5 != target_m5_count:
+                    continue
+
+                m10 = count_m10_in_sequence(terms, digit_count)
+                if m10 != target_m10_count:
+                    continue
+
+                m15 = count_m15_in_sequence(terms, digit_count)
+                if m15 != target_m15_count:
+                    continue
+
                 pb = count_pb_in_sequence(terms)
                 mb = count_mb_in_sequence(terms)
-                p5 = count_p5_in_sequence(terms, digit_count)
-                p10 = count_p10_in_sequence(terms, digit_count)
-                p15 = count_p15_in_sequence(terms, digit_count)
-                m5 = count_m5_in_sequence(terms, digit_count)
-                m10 = count_m10_in_sequence(terms, digit_count)
-                m15 = count_m15_in_sequence(terms, digit_count)
 
-                # 条件チェック: 「難」の各値が目標値と一致するか
-                if (p5 == target_p5_count 
-                        and p10 == target_p10_count 
-                        and p15 == target_p15_count 
-                        and m5 == target_m5_count 
-                        and m10 == target_m10_count 
-                        and m15 == target_m15_count):
-                    formatted_q = format_formula(terms, ans)
-                    problems.append({
-                        "formula": formatted_q,
-                        "ans": ans,
-                        "pb": pb,
-                        "mb": mb,
-                        "p5": p5,
-                        "p10": p10,
-                        "p15": p15,
-                        "m5": m5,
-                        "m10": m10,
-                        "m15": m15,
-                        "terms": terms
-                    })
-                    # 進捗バー更新
-                    progress_bar.progress(len(problems) / num_questions)
+                formatted_q = format_formula(terms, ans)
+                problems.append({
+                    "formula": formatted_q,
+                    "ans": ans,
+                    "pb": pb,
+                    "mb": mb,
+                    "p5": p5,
+                    "p10": p10,
+                    "p15": p15,
+                    "m5": m5,
+                    "m10": m10,
+                    "m15": m15,
+                    "terms": terms
+                })
+
+                # 進捗バー更新
+                progress_bar.progress(len(problems) / num_questions)
 
         status_text.empty()
         progress_bar.empty()
@@ -113,7 +127,7 @@ if st.button("問題を生成する", type="primary"):
 
         for i, p in enumerate(problems, 1):
             line_str = f"No.{i}:\n{p['formula']}\n[PB:{p['pb']}, MB:{p['mb']}]"
-            st.text(line_str) # 画面表示
+            st.text(line_str)  # 画面表示
             output_text += line_str + "\n"
 
         # ダウンロードボタン
