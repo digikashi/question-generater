@@ -97,8 +97,7 @@ def format_formula(terms, ans):
 
 def generate_problem_set():
     """
-    2桁8口の問題を指定数生成して出力する
-    PBカウント機能を追加
+    問題を指定数生成して出力する
     """
     NUM_DIGITS = 2 #桁数
     NUM_LINES = 8 #口数

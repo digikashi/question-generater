@@ -7,17 +7,16 @@ from pb_logic import count_pb_in_sequence
 from mb_logic import count_mb_in_sequence
 from problem_generater import generate_single_problem, format_formula
 
-digit_count = 2 # 2桁
-
 # --- 設定とタイトル ---
 st.set_page_config(page_title="計算問題ジェネレーター", layout="centered")
-st.title("🧮 2桁問題ジェネレーター")
-st.markdown("2桁8口の問題を生成できます")
+st.title("🧮 問題ジェネレーター")
+st.markdown("条件を指定して問題を生成できます")
 
 # --- サイドバー：条件設定 ---
 st.sidebar.header("設定")
 
-#digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=2, value=2)
+digit_count = 2
+#digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
 num_lines = st.sidebar.number_input("口数", min_value=3, max_value=15, value=8)
 zero_count = st.sidebar.number_input("一の位が0の数", min_value=0, max_value=num_lines, value=2)
 minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=num_lines - 1, value=3)
@@ -54,8 +53,7 @@ if st.button("問題を生成する", type="primary"):
             attempts += 1
 
             # 既存の関数を利用して単一問題を生成
-            # (桁数は2で固定としていますが、必要なら変更可)
-            result = generate_single_problem(2, num_lines, zero_count, minus_count)
+            result = generate_single_problem(digit_count, num_lines, zero_count, minus_count)
 
             if result:
                 terms, ans = result
