@@ -31,12 +31,12 @@ num_questions = st.sidebar.number_input("生成する問題数", min_value=1, ma
 st.sidebar.divider()
 st.sidebar.subheader("難易度調整")
 
-target_p5_count = st.sidebar.number_input("p5", min_value=0, max_value=digit_count * num_lines, value=3)
-target_p10_count = st.sidebar.number_input("p10", min_value=0, max_value=digit_count * num_lines, value=3)
-target_p15_count = st.sidebar.number_input("p15", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m5_count = st.sidebar.number_input("m5", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m10_count = st.sidebar.number_input("m10", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m15_count = st.sidebar.number_input("m15", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p5_count = st.sidebar.number_input("P5", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p10_count = st.sidebar.number_input("P10", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p15_count = st.sidebar.number_input("P15", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m5_count = st.sidebar.number_input("M5", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m10_count = st.sidebar.number_input("M10", min_value=0, max_value=digit_count * num_lines, value=3)
+target_m15_count = st.sidebar.number_input("M15", min_value=0, max_value=digit_count * num_lines, value=3)
 
 total_difficult = target_p5_count + target_p10_count + target_p15_count + target_m5_count + target_m10_count + target_m15_count
 st.sidebar.text(f"「難」の合計: {total_difficult} 回")
@@ -126,7 +126,7 @@ if st.button("問題を生成する", type="primary"):
         st.subheader("生成結果")
 
         for i, p in enumerate(problems, 1):
-            line_str = f"No.{i}:\n{p['formula']}\n[PB:{p['pb']}, MB:{p['mb']}]"
+            line_str = f"No.{i}:\n{p['formula']}]\n"
             st.text(line_str)  # 画面表示
             output_text += line_str + "\n"
 
