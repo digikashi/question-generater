@@ -31,12 +31,12 @@ num_questions = st.sidebar.number_input("生成する問題数", min_value=1, ma
 st.sidebar.divider()
 st.sidebar.subheader("難易度調整")
 
-target_p5_count = st.sidebar.number_input("P5", min_value=0, max_value=digit_count * num_lines, value=3)
-target_p10_count = st.sidebar.number_input("P10", min_value=0, max_value=digit_count * num_lines, value=3)
-target_p15_count = st.sidebar.number_input("P15", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m5_count = st.sidebar.number_input("M5", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m10_count = st.sidebar.number_input("M10", min_value=0, max_value=digit_count * num_lines, value=3)
-target_m15_count = st.sidebar.number_input("M15", min_value=0, max_value=digit_count * num_lines, value=3)
+target_p5_count = st.sidebar.number_input("P5", min_value=0, max_value=digit_count * num_lines, value=1)
+target_p10_count = st.sidebar.number_input("P10", min_value=0, max_value=digit_count * num_lines, value=1)
+target_p15_count = st.sidebar.number_input("P15", min_value=0, max_value=digit_count * num_lines, value=1)
+target_m5_count = st.sidebar.number_input("M5", min_value=0, max_value=digit_count * num_lines, value=1)
+target_m10_count = st.sidebar.number_input("M10", min_value=0, max_value=digit_count * num_lines, value=1)
+target_m15_count = st.sidebar.number_input("M15", min_value=0, max_value=digit_count * num_lines, value=1)
 
 total_difficult = target_p5_count + target_p10_count + target_p15_count + target_m5_count + target_m10_count + target_m15_count
 st.sidebar.text(f"「難」の合計: {total_difficult} 回")
@@ -124,9 +124,13 @@ if st.button("問題を生成する", type="primary"):
         # テキストデータ作成（コピー用・ダウンロード用）
         output_text = ""
         st.subheader("生成結果")
+        # ユーザーが指定した「目標値」を表示するのが自然です
+        # ユーザーが指定した「目標値」を表示（全角スペースを削除し、半角スペース4つに修正）
+        st.text(
+            f"条件設定 -> P5: {target_p5_count}回, P10: {target_p10_count}回, P15: {target_p15_count}回, M5: {target_m5_count}回, M10: {target_m10_count}回, M15: {target_m15_count}回")
 
         for i, p in enumerate(problems, 1):
-            line_str = f"No.{i}:\n{p['formula']}]\n"
+            line_str = f"No.{i}:\n{p['formula']}\n"
             st.text(line_str)  # 画面表示
             output_text += line_str + "\n"
 
