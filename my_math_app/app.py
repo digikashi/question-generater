@@ -5,6 +5,12 @@ import io
 # 既存のロジックファイルをインポート
 from pb_logic import count_pb_in_sequence
 from mb_logic import count_mb_in_sequence
+from p5_logic import count_p5_in_sequence
+from p10_logic import count_p10_in_sequence
+from p15_logic import count_p15_in_sequence
+from m5_logic import count_m5_in_sequence
+from m10_logic import count_m10_in_sequence
+from m15_logic import count_m15_in_sequence
 from problem_generater import generate_single_problem, format_formula
 
 # --- 設定とタイトル ---
@@ -22,15 +28,18 @@ zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=15, value
 minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=14, value=3)
 num_questions = st.sidebar.number_input("生成する問題数", min_value=1, max_value=50, value=5)
 
-# 難易度設定（PB+MB以外の回数）
-st.sidebar.subheader("難易度調整")
-target_difficult_count = st.sidebar.number_input(
-    "「難」の数 (PB/MB以外)",
-    min_value=0,
-    max_value=digit_count * num_lines,
-    value=3,
-    help="この回数だけPBでもMBでもない計算が含まれます。残りはすべてPBかMBになります。"
-)
+st.sidebar.divider()
+st.slidebar.subheader("難易度調整")
+
+target_p5_count = st.sidebar.number_input("p5",min_value=0,max_value=digit_count * num_lines,value=3)
+target_p10_count = st.sidebar.number_input("p10",min_value=0,max_value=digit_count * num_lines,value=3)
+target_p15_count = st.sidebar.number_input("p15",min_value=0,max_value=digit_count * num_lines,value=3)
+target_m5_count = st.sidebar.number_input("p5",min_value=0,max_value=digit_count * num_lines,value=3)
+target_m10_count = st.sidebar.number_input("p10",min_value=0,max_value=digit_count * num_lines,value=3)
+target_m15_count = st.sidebar.number_input("p15",min_value=0,max_value=digit_count * num_lines,value=3)
+
+sum = target_p5_count + target_p10_count + target_p15_count + target_m5_count + target_m10_count + target_m15_count
+st.slidebar.text("「難」の合計:" + sum + "回")
 
 # 生成ボタン
 if st.button("問題を生成する", type="primary"):
@@ -58,15 +67,32 @@ if st.button("問題を生成する", type="primary"):
                 terms, ans = result
                 pb = count_pb_in_sequence(terms)
                 mb = count_mb_in_sequence(terms)
+                p5 = count_p5_in_sequence(terms, digit_count)
+                p10 = count_p10_in_sequence(terms, digit_count)
+                p15 = count_p15_in_sequence(terms, digit_count)
+                m5 = count_m5_in_sequence(terms, digit_count)
+                m10 = count_m10_in_sequence(terms, digit_count)
+                m15 = count_m15_in_sequence(terms, digit_count)
 
-                # 条件チェック: PB+MBの合計が目標値と一致するか
-                if pb + mb == target_pb_mb_count:
+                # 条件チェック: 「難」の各値が目標値と一致するか
+                if (p5 == target_p5_count 
+                        and p10 == target_p10_count 
+                        and p15 == target_p15_count 
+                        and m5 == target_m5_count 
+                        and m10 == target_m10_count 
+                        and m15 == target_m15_count):
                     formatted_q = format_formula(terms, ans)
                     problems.append({
                         "formula": formatted_q,
                         "ans": ans,
                         "pb": pb,
                         "mb": mb,
+                        "p5": p5,
+                        "p10": p10,
+                        "p15": p15,
+                        "m5": m5,
+                        "m10": m10,
+                        "m15": m15,
                         "terms": terms
                     })
                     # 進捗バー更新
