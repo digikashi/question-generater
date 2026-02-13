@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import io
+import time
 
 # 既存のロジックファイルをインポート
 from pb_logic import count_pb_in_sequence
@@ -53,11 +54,21 @@ if st.button("問題を生成する", type="primary"):
         attempts = 0
         max_attempts = 20000  # ループ回数制限
 
+        timeout_seconds = 60
+        start_time = time.time()
+
         progress_bar = st.progress(0)
         status_text = st.empty()
 
         # --- 生成ループ ---
         while len(problems) < num_questions and attempts < max_attempts:
+            # タイムアウトチェック
+            elapsed_time = time.time() - start_time
+            st.text(f"経過時間: {int(elapsed_time)}秒 / {timeout_seconds}秒")
+            if elapsed_time > timeout_seconds:
+                st.warning(f"処理時間が{timeout_seconds}秒を超えたため、生成を中断しました。")
+                break
+
             attempts += 1
 
             # 既存の関数を利用して単一問題を生成
