@@ -45,37 +45,6 @@ def count_p10_in_sequence(terms, num_digits=2):
 
     return sim.p10_count
 
-    p10_count = 0
-    current_sum = 0
-
-    for val in terms[0:]:
-        # 足し算の場合のみP10判定を行う
-        if val > 0:
-            # --- 一の位の判定 ---
-            curr_ones = current_sum % 10
-            val_ones = val % 10
-            if is_p10_digit(curr_ones, val_ones):
-                p10_count += 1
-
-            # --- 十の位の判定 ---
-            if num_digits >= 2:
-                curr_tens = (current_sum // 10) % 10
-                val_tens = (val // 10) % 10
-                if is_p10_digit(curr_tens, val_tens):
-                    p10_count += 1
-
-            # --- 百の位の判定 ---
-            if num_digits >= 3:
-                curr_hundreds = (current_sum // 100) % 10
-                val_hundreds = (val // 100) % 10
-                if is_p10_digit(curr_hundreds, val_hundreds):
-                    p10_count += 1
-
-        # 計算を進める
-        current_sum += val
-
-    return p10_count
-
 
 class SorobanSimulator:
     def __init__(self):

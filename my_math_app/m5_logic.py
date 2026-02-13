@@ -40,6 +40,13 @@ def count_m5_in_sequence(terms, num_digits=2):
         if val < 0:
             abs_val = abs(val)
 
+            # --- 百の位の判定 ---
+            if num_digits >= 3:
+                curr_hundreds = (current_sum // 100) % 10
+                val_hundreds = (abs_val // 100) % 10
+                if val_hundreds > 0 and is_m5_digit(curr_hundreds, val_hundreds):
+                    m5_count += 1
+
             # --- 十の位の判定 ---
             if num_digits >= 2:
                 curr_tens = (current_sum // 10) % 10

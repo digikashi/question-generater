@@ -18,8 +18,7 @@ st.markdown("条件を指定して問題を生成できます")
 # --- サイドバー：条件設定 ---
 st.sidebar.header("設定")
 
-digit_count = 2
-# digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
+digit_count = st.sidebar.number_input("桁数", min_value=2, max_value=3, value=2)
 num_lines = st.sidebar.number_input("口数", min_value=1, max_value=10, value=8)
 zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=10, value=2)
 minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=9, value=3)
