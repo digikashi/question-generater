@@ -14,8 +14,7 @@ def create_digits_pool(num_digits, num_lines, zero_count):
     normal_lines = num_lines - zero_count  # 通常の項の数 = 全口数 - 0の項の数
 
     # 必要な数字 = (通常の項 * 2個) + (0の項 * 1個)
-    # ※ここは「2桁」計算用です。3桁以上の場合はロジックを変える必要があります
-    total_needed = (normal_lines * 2) + (zero_count * 1)
+    total_needed = (normal_lines * num_digits) + (zero_count * (num_digits - 1))
 
     # 1～9の数字をほぼ均等に配置
     base_count = total_needed // 9
@@ -31,34 +30,62 @@ def create_digits_pool(num_digits, num_lines, zero_count):
     return digits_pool
 
 
-def create_zero_terms(current_pool, zero_count):
-    # プールから数字を取り出し、一の位が0の2桁数を生成
+def create_zero_terms(current_pool, zero_count, num_digits):
+    """
+    プールから数字を取り出し、0を含む項を生成する
+    2桁の場合: X0
+    3桁の場合: XX0 または X0X (ランダム)
+    """
     zero_terms = []
     for _ in range(zero_count):
-        val = current_pool.pop()
-        zero_terms.append(val * 10 + 0)
+        if num_digits == 2:
+            val = current_pool.pop()
+            term = val * 10 + 0
+
+        elif num_digits == 3:
+            h = current_pool.pop()
+            other = current_pool.pop()
+            pattern = random.choice(['XX0', 'X0X'])
+            if pattern == 'XX0':
+                term = h * 100 + other * 10 + 0
+            else:
+                term = h * 100 + 0 * 10 + other
+
+        else:
+            raise ValueError(f"create_zero_terms は現在 {num_digits} 桁に対応していません。")
+
+        zero_terms.append(term)
+
     return zero_terms
 
 
-def create_non_zero_terms(current_pool):
-    if len(current_pool) % 2 != 0:
+def create_non_zero_terms(current_pool, num_digits):
+    if len(current_pool) % num_digits != 0:
         raise ValueError(
-            f"create_non_zero_terms エラー: プールの残り要素数が奇数({len(current_pool)}個)です。ペアを作成できません。")
+            f"create_non_zero_terms エラー: プールの残り要素数({len(current_pool)}個)が桁数({num_digits})で割り切れません。組み合わせを作成できません。")
 
-    # 十の位と一の位が異なる2桁数のペアを生成（最大50回試行）
+    # 指定桁数の数字セットを生成（最大50回試行）
     for _ in range(50):
         random.shuffle(current_pool)
         attempt_pairs = []
         possible = True
-        for i in range(0, len(current_pool), 2):
-            tens = current_pool[i]
-            units = current_pool[i + 1]
-            if tens == units:
+
+        for i in range(0, len(current_pool), num_digits):
+            digits_chunk = current_pool[i: i + num_digits]
+
+            # ゾロ目チェック(3桁の場合、111などの完全なゾロ目を排除)
+            if len(set(digits_chunk)) == 1:
                 possible = False
                 break
-            attempt_pairs.append(tens * 10 + units)
+
+            val = 0
+            for d in digits_chunk:
+                val = val * 10 + d
+            attempt_pairs.append(val)
+
         if possible:
             return attempt_pairs, True
+
     return [], False
 
 
@@ -80,8 +107,10 @@ def has_duplicate_absolute_values(calc_sequence):
     return len(absolute_values) != len(set(absolute_values))
 
 
-def is_cumulative_sum_valid(calc_sequence, min_sum=10, max_sum=999):
+def is_cumulative_sum_valid(calc_sequence, num_digits):
     # 累積和が指定範囲内に収まっているかを検証
+    min_sum = 10 ** (num_digits - 1)
+    max_sum = (10 ** (num_digits + 1)) - 1
     if has_duplicate_absolute_values(calc_sequence):
         return False, 0
     current_sum = 0
@@ -99,13 +128,13 @@ def generate_single_problem(num_digits, num_lines, zero_count, minus_count):
         current_pool = digits_pool[:]
         random.shuffle(current_pool)
         temp_terms = []
-        temp_terms.extend(create_zero_terms(current_pool, zero_count))
-        non_zero_terms, pairing_success = create_non_zero_terms(current_pool)
+        temp_terms.extend(create_zero_terms(current_pool, zero_count, num_digits))
+        non_zero_terms, pairing_success = create_non_zero_terms(current_pool, num_digits)
         if not pairing_success:
             continue
         temp_terms.extend(non_zero_terms)
         calc_sequence = apply_signs(temp_terms, minus_count)
-        valid, final_sum = is_cumulative_sum_valid(calc_sequence)
+        valid, final_sum = is_cumulative_sum_valid(calc_sequence, num_digits)
         if valid:
             return calc_sequence, final_sum
     return None
