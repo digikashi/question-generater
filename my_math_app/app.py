@@ -1,11 +1,7 @@
 import streamlit as st
-import random
-import io
 import time
 
 # 既存のロジックファイルをインポート
-from pb_logic import count_pb_in_sequence
-from mb_logic import count_mb_in_sequence
 from p5_logic import count_p5_in_sequence
 from p10_logic import count_p10_in_sequence
 from p15_logic import count_p15_in_sequence
@@ -24,9 +20,9 @@ st.sidebar.header("設定")
 
 digit_count = 2
 # digit_count = st.sidebar.number_input("桁数", min_value=1, max_value=4, value=2)
-num_lines = st.sidebar.number_input("口数", min_value=1, max_value=15, value=8)
-zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=15, value=2)
-minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=14, value=3)
+num_lines = st.sidebar.number_input("口数", min_value=1, max_value=10, value=8)
+zero_count = st.sidebar.number_input("0の数", min_value=0, max_value=10, value=2)
+minus_count = st.sidebar.number_input("マイナスの数", min_value=0, max_value=9, value=3)
 num_questions = st.sidebar.number_input("生成する問題数", min_value=1, max_value=50, value=5)
 
 st.sidebar.divider()
@@ -107,15 +103,10 @@ if st.button("問題を生成する", type="primary"):
                 if m15 != target_m15_count:
                     continue
 
-                pb = count_pb_in_sequence(terms)
-                mb = count_mb_in_sequence(terms)
-
                 formatted_q = format_formula(terms, ans)
                 problems.append({
                     "formula": formatted_q,
                     "ans": ans,
-                    "pb": pb,
-                    "mb": mb,
                     "p5": p5,
                     "p10": p10,
                     "p15": p15,
@@ -140,8 +131,7 @@ if st.button("問題を生成する", type="primary"):
         # テキストデータ作成（コピー用・ダウンロード用）
         output_text = ""
         st.subheader("生成結果")
-        # ユーザーが指定した「目標値」を表示するのが自然です
-        # ユーザーが指定した「目標値」を表示（全角スペースを削除し、半角スペース4つに修正）
+        # ユーザーが指定した「目標値」を表示
         st.text(
             f"条件設定 -> P5: {target_p5_count}回, P10: {target_p10_count}回, P15: {target_p15_count}回, M5: {target_m5_count}回, M10: {target_m10_count}回, M15: {target_m15_count}回")
 
