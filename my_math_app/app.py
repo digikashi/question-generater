@@ -56,15 +56,20 @@ if st.button("問題を生成する", type="primary"):
 
         timeout_seconds = 60
         start_time = time.time()
+        last_time_display = -1
 
         progress_bar = st.progress(0)
         status_text = st.empty()
+        timer_text = st.empty()
 
         # --- 生成ループ ---
         while len(problems) < num_questions and attempts < max_attempts:
             # タイムアウトチェック
             elapsed_time = time.time() - start_time
-            st.text(f"経過時間: {int(elapsed_time)}秒 / {timeout_seconds}秒")
+            current_sec = int(elapsed_time)
+            if current_sec != last_time_display:
+                timer_text.text(f"経過時間: {current_sec}秒 / {timeout_seconds}秒")
+                last_time_display = current_sec
             if elapsed_time > timeout_seconds:
                 st.warning(f"処理時間が{timeout_seconds}秒を超えたため、生成を中断しました。")
                 break
