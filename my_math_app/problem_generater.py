@@ -11,15 +11,23 @@ from m15_logic import count_m15_in_sequence
 
 def create_digits_pool(num_digits, num_lines, zero_count):
     # 1～9の数字をほぼ均等に配置した数字プールを生成
-    total_cells = num_digits * num_lines
-    non_zero_cells = total_cells - zero_count
-    base_count = non_zero_cells // 9
-    remainder = non_zero_cells % 9
+    normal_lines = num_lines - zero_count  # 通常の項の数 = 全口数 - 0の項の数
+
+    # 必要な数字 = (通常の項 * 2個) + (0の項 * 1個)
+    # ※ここは「2桁」計算用です。3桁以上の場合はロジックを変える必要があります
+    total_needed = (normal_lines * 2) + (zero_count * 1)
+
+    # 1～9の数字をほぼ均等に配置
+    base_count = total_needed // 9
+    remainder = total_needed % 9
+
     digits_pool = []
     for i in range(1, 10):
         digits_pool.extend([i] * base_count)
-    extra_candidates = random.choices(range(1, 10), k=remainder)
-    digits_pool.extend(extra_candidates)
+    if remainder > 0:
+        extra_candidates = random.choices(range(1, 10), k=remainder)  # 条件緩和のためにchoicesを使用
+        digits_pool.extend(extra_candidates)
+
     return digits_pool
 
 
@@ -33,6 +41,10 @@ def create_zero_terms(current_pool, zero_count):
 
 
 def create_non_zero_terms(current_pool):
+    if len(current_pool) % 2 != 0:
+        raise ValueError(
+            f"create_non_zero_terms エラー: プールの残り要素数が奇数({len(current_pool)}個)です。ペアを作成できません。")
+
     # 十の位と一の位が異なる2桁数のペアを生成（最大50回試行）
     for _ in range(50):
         random.shuffle(current_pool)

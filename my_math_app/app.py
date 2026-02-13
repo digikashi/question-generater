@@ -46,7 +46,7 @@ if st.button("問題を生成する", type="primary"):
 
     if minus_count >= num_lines:
         st.error("エラー: マイナスの回数が口数以上です。")
-    elif zero_count > num_lines:
+    elif digit_count == 2 and zero_count > num_lines:
         st.error("エラー: 0の回数が口数を超えています。")
     else:
         problems = []
