@@ -52,7 +52,7 @@ if st.button("問題を生成する", type="primary"):
     else:
         problems = []
         attempts = 0
-        max_attempts = 1000000  # ループ回数制限
+        max_attempts = 100000  # ループ回数制限
 
         timeout_seconds = 60
         start_time = time.time()
